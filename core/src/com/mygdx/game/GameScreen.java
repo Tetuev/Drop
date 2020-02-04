@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Iterator;
 
-public class GameScreen implements Screen {
+public class GameScreen implements Screen { //реализуем интерфейс Screen(содержит методы show/hide при потере фокуса
 
     final Drop game;
     OrthographicCamera camera;
@@ -33,82 +33,83 @@ public class GameScreen implements Screen {
 
 
 
-    public GameScreen (final Drop gam) {
+    public GameScreen (final Drop gam) {//конструктор , в который передаем объект Drop
         this.game = gam;
 
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
+        camera.setToOrtho(false, 800, 480);// установка камеры просмотра игры
 
-        touchPos = new Vector3();
+        touchPos = new Vector3();// Cоздание объекта при касании по экрану
 
-        dropImage = new Texture("droplet.png");
+        dropImage = new Texture("droplet.png");//загрузка текстур
         bucketImage = new Texture("bucket.png");
 
-        dropSound = Gdx.audio.newSound(Gdx.files.internal("waterdrop.wav"));
+        dropSound = Gdx.audio.newSound(Gdx.files.internal("waterdrop.wav"));//загрузка звука
         rainMusic = Gdx.audio.newMusic(Gdx.files.internal("undertreeinrain.mp3"));
 
-        rainMusic.setLooping(true);
+        rainMusic.setLooping(true);//зацикливание музыки
         rainMusic.play();
 
-        bucket = new Rectangle();
-        bucket.x = 800 / 2 - 64 / 2;
+        bucket = new Rectangle();//cоздание объекта ведра
+        bucket.x = 800 / 2 - 64 / 2;// задание начального положения ведра
         bucket.y = 20;
-        bucket.width = 64;
+        bucket.width = 64;// задание размеров ведра
         bucket.height = 64;
 
         raindrops = new Array<Rectangle>();
-        spawnRaindrop();
+        spawnRaindrop(); // порождаем первую каплю
 
     }
 
-    private void spawnRaindrop(){
+    private void spawnRaindrop(){ // метод создания капли
         Rectangle raindrop = new Rectangle();
         raindrop.x = MathUtils.random(0, 800-64);
         raindrop.y = 480;
         raindrop.width = 64;
         raindrop.height = 64;
-        raindrops.add(raindrop);
-        lastDropTime = TimeUtils.nanoTime();
+        raindrops.add(raindrop);// добавление в массив
+        lastDropTime = TimeUtils.nanoTime();// запись текущего времени создания капли в наносекундах
     }
 
     @Override
-    public void render (float delta) {
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+    public void render (float delta) { // метод рисующий экран игры
+        Gdx.gl.glClearColor(0, 0, 0.2f, 1);// очистка поля игры и закраска цветом
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        camera.update();
+        camera.update();//обновление камеры 1 раз за кадр
 
-        game.batch.setProjectionMatrix(camera.combined);
+        game.batch.setProjectionMatrix(camera.combined);//cообщаем методу SpriteBatch что нужно использовать систему координат камеры
         game.batch.begin();
-        game.font.draw(game.batch, "Drops Collected: " + dropsGatchered, 0, 480);
+        game.font.draw(game.batch, "DROPS COUNT: " + dropsGatchered, 25, 450);
         game.batch.draw(bucketImage, bucket.x, bucket.y);
-        for (Rectangle raindrop: raindrops){
+        //game.batch.draw(lightImage, light.x, light.y);
+        for (Rectangle raindrop: raindrops){//отображение капель на экране
             game.batch.draw(dropImage, raindrop.x, raindrop.y);
         }
         game.batch.end();
 
-        if(Gdx.input.isTouched()){
-            touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-            camera.unproject(touchPos);
-            bucket.x = (int) (touchPos.x -64 / 2);
+        if(Gdx.input.isTouched()){// метод опрашиваюший есть ли прикосновение к экрану или нажатие кнопки мыши
+            touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);// преобразование касания координат касания экрана к координатам камеры
+            camera.unproject(touchPos);// метод unproject преобразует вектор координат нажатия в вектор камеры
+            bucket.x = (int) (touchPos.x -64 / 2);// изменение координат ведра в рамки координат прикосновения
         }
 
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) bucket.x -= 300 * Gdx.graphics.getDeltaTime();
+        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) bucket.x -= 300 * Gdx.graphics.getDeltaTime();// передвижение ведра влево/вправо при нажатии клавиш
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) bucket.x += 300 * Gdx.graphics.getDeltaTime();
 
-        if (bucket.x < 0) bucket.x = 0;
+        if (bucket.x < 0) bucket.x = 0;// проверка того что ведро остается в пределах экрана
         if (bucket.x > 800 - 64) bucket.x = 800 - 64;
 
-        if (TimeUtils.nanoTime() - lastDropTime > 1000000000) spawnRaindrop();
+        if (TimeUtils.nanoTime() - lastDropTime > 1000000000) spawnRaindrop();//проверка времени которое прошло после создания капли и при необходимости создавать еще каплю
 
         Iterator<Rectangle> iter = raindrops.iterator();
         while (iter.hasNext()){
             Rectangle raindrop = iter.next();
-            raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
-            if (raindrop.y + 64 < 0) iter.remove();
-            if (raindrop.overlaps(bucket)){
-                dropsGatchered++;
-                dropSound.play();
+            raindrop.y -= 200 * Gdx.graphics.getDeltaTime();// движение капель с заданной скоростью
+            if (raindrop.y + 64 < 0) iter.remove();// удаление капли из массива при достижении края экрана
+            if (raindrop.overlaps(bucket)){// метод overlaps определяет пересечение прямоугольника
+                dropsGatchered++;//добавление счетчика капель
+                dropSound.play();// звук и удаление упавшей капли
                 iter.remove();
             }
         }
@@ -135,7 +136,7 @@ public class GameScreen implements Screen {
     }
 
     @Override
-    public void dispose() {
+    public void dispose() {// метод освобождения ресурсов , не будут обработаны сборщиком мусора
         dropImage.dispose();
         bucketImage.dispose();
         dropSound.dispose();
@@ -145,5 +146,5 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         rainMusic.play();
-    }
+    } //метод проигрывания музыки
 }

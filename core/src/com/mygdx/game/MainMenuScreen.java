@@ -5,9 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
-/**
- * Created by Vitaly on 13.10.2015.
- */
+
 public class MainMenuScreen implements Screen {
 
     final Drop game;
@@ -17,7 +15,7 @@ public class MainMenuScreen implements Screen {
     public MainMenuScreen(final Drop gam) {
         game = gam;
 
-        camera = new OrthographicCamera();
+        camera = new OrthographicCamera();// cоздание экземпляра камеры и установка ее параметров
         camera.setToOrtho(false, 800, 480);
     }
 
@@ -35,12 +33,12 @@ public class MainMenuScreen implements Screen {
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-        game.font.draw(game.batch, "Welcome to Drop!", 100, 150);
-        game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
+        game.font.draw(game.batch, "DROP GAME", 300, 250); //отображение текста на экране
+        game.font.draw(game.batch, "ANY KEY TO START", 300, 200);
         game.batch.end();
 
         if (Gdx.input.isTouched()){
-            game.setScreen(new GameScreen(game));
+            game.setScreen(new GameScreen(game)); //Проверяем было ли прикосновение к экрану и переходим на GameScreen
             dispose();
         }
 
