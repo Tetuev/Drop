@@ -6,7 +6,7 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.mygdx.game.Drop;
 
-public class AndroidLauncher extends AndroidApplication {
+public class  AndroidLauncher extends AndroidApplication {
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -15,4 +15,5 @@ public class AndroidLauncher extends AndroidApplication {
 		config.useCompass = false;
 		initialize(new Drop(), config);
 	}
+
 }

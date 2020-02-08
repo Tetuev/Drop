@@ -8,6 +8,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -41,11 +42,11 @@ public class GameScreen implements Screen { //реализуем интерфе�
 
         touchPos = new Vector3();// Cоздание объекта при касании по экрану
 
-        dropImage = new Texture("droplet.png");//загрузка текстур
-        bucketImage = new Texture("bucket.png");
+        dropImage = new Texture("drop4.png");//загрузка текстур
+        bucketImage = new Texture("vase5.png");
 
         dropSound = Gdx.audio.newSound(Gdx.files.internal("waterdrop.wav"));//загрузка звука
-        rainMusic = Gdx.audio.newMusic(Gdx.files.internal("undertreeinrain.mp3"));
+        rainMusic = Gdx.audio.newMusic(Gdx.files.internal("seapalace.mp3"));
 
         rainMusic.setLooping(true);//зацикливание музыки
         rainMusic.play();
@@ -73,8 +74,31 @@ public class GameScreen implements Screen { //реализуем интерфе�
 
     @Override
     public void render (float delta) { // метод рисующий экран игры
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1);// очистка поля игры и закраска цветом
+        Gdx.gl.glClearColor(0.4f, 0, 0, 1);// очистка поля игры и закраска цветом
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        SpriteBatch spriteBatch = new SpriteBatch();
+        Texture texture = new Texture(Gdx.files.internal("backgroundgame1.jpg")); //задний фон экрана меню
+        spriteBatch.begin();
+        spriteBatch.draw(texture, 0, 0);
+        spriteBatch.end();
+
+        if (dropsGatchered > 5){
+            SpriteBatch spriteBatch2 = new SpriteBatch();
+            Texture texture2 = new Texture(Gdx.files.internal("backgroundgame2.jpg")); //задний фон экрана меню
+            spriteBatch2.begin();
+            spriteBatch2.draw(texture2, 0, 0);
+            spriteBatch2.end();
+
+            if (dropsGatchered > 15) {
+                SpriteBatch spriteBatch3 = new SpriteBatch();
+                Texture texture3 = new Texture(Gdx.files.internal("backgroundgame3.jpg")); //задний фон экрана меню
+                spriteBatch3.begin();
+                spriteBatch3.draw(texture3, 0, 0);
+                spriteBatch3.end();
+            }
+
+        }
 
         camera.update();//обновление камеры 1 раз за кадр
 
@@ -112,6 +136,7 @@ public class GameScreen implements Screen { //реализуем интерфе�
                 dropSound.play();// звук и удаление упавшей капли
                 iter.remove();
             }
+
         }
     }
 
